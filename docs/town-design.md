@@ -5,76 +5,121 @@ Design for `gt install`, `gt doctor`, and federation in the Gas Town Go port.
 ## Overview
 
 A **Town** is a complete Gas Town installation containing:
-- Workspace config (`.gastown/` or `mayor/`)
-- Rigs (project workspaces)
-- Polecats (worker clones)
+- Town config (`config/` directory - VISIBLE, not hidden)
+- Mayor's home (`mayor/` directory)
+- Rigs (managed project clones)
+- Per-rig agents (witness/, refinery/, polecats/, mayor/)
 - Mail system
 - Beads integration
 
+## Architecture Decision: Decentralized Agents (gt-iib)
+
+Each rig contains ALL its agents rather than centralizing at town level:
+- Mayor's clone lives at `<rig>/mayor/rig/` (not `mayor/rigs/<rig>/`)
+- Witness (pit boss) at `<rig>/witness/rig/` - NEW in GGT
+- Refinery at `<rig>/refinery/rig/`
+- Polecats at `<rig>/polecats/<name>/`
+
+## Directory Structure
+
+### Town Level
+
+```
+~/ai/                              # Town root (e.g., stevey-gastown repo)
+├── config/                        # Town config (VISIBLE, not hidden!)
+│   ├── town.json                  # {"type": "town", "name": "..."}
+│   ├── rigs.json                  # Registry of managed rigs
+│   └── federation.json            # Wasteland config (future)
+│
+├── mayor/                         # Mayor's HOME at town level
+│   ├── CLAUDE.md                  # Mayor role context
+│   ├── mail/
+│   │   └── inbox.jsonl            # Mayor's inbox
+│   └── state.json
+│
+├── wyvern/                        # Rig (see below)
+└── beads/                         # Another rig
+```
+
+### Rig Level (e.g., wyvern)
+
+```
+wyvern/                            # Rig = clone of project repo
+├── .git/
+│   └── info/exclude               # Gas Town adds: polecats/ refinery/ witness/ mayor/
+├── .beads/                        # Beads (if project uses it)
+├── [project files]                # Clean project code on main branch
+│
+├── polecats/                      # Worker clones (gitignored via exclude)
+│   ├── Nux/                       # git clone of wyvern
+│   └── Toast/
+│
+├── refinery/                      # Refinery agent
+│   ├── rig/                       # Refinery's clone
+│   ├── state.json
+│   └── mail/inbox.jsonl
+│
+├── witness/                       # Witness agent (per-rig pit boss) - NEW
+│   ├── rig/                       # Witness's clone
+│   ├── state.json
+│   └── mail/inbox.jsonl
+│
+└── mayor/                         # Mayor's presence in this rig
+    ├── rig/                       # Mayor's clone for rig-specific edits
+    └── state.json
+```
+
+### Minimal Rig Invasiveness
+
+Gas Town is a harness OVER projects. When adding a rig:
+1. Clone project to town: `gt rig add <git-url>`
+2. Add to `.git/info/exclude`: `polecats/`, `refinery/`, `witness/`, `mayor/`
+3. Create agent directories
+
+**The project repo is NEVER modified.** No commits needed.
+
 ## Config Files
 
-### Workspace Root
-
-A town is identified by a config directory (`mayor/` or `.gastown/`) containing `config.json` with `type: "workspace"`.
-
-```
-~/ai/                           # Workspace root
-├── mayor/                      # or .gastown/
-│   ├── config.json             # Workspace identity
-│   ├── state.json              # Workspace state
-│   ├── mail/                   # Mail system
-│   │   └── inbox.jsonl         # Mayor's inbox
-│   ├── boss/                   # Boss state
-│   │   └── state.json
-│   └── rigs/                   # Mayor's rig clones (for beads access)
-│       ├── gastown/
-│       └── beads/
-├── gastown/                    # Rig
-│   ├── .gastown/               # Rig config (type: "rig")
-│   │   └── config.json
-│   ├── refinery/               # Refinery infrastructure
-│   │   ├── README.md
-│   │   ├── state.json
-│   │   ├── state.json.lock
-│   │   └── rig/                # Refinery's git clone
-│   └── <polecats>/             # Worker clones
-└── beads/                      # Another rig
-```
-
-### Workspace config.json
+### config/town.json
 
 ```json
 {
-  "type": "workspace",
+  "type": "town",
   "version": 1,
+  "name": "stevey-gastown",
   "created_at": "2024-01-15T10:30:00Z"
 }
 ```
 
-### Workspace state.json
+### config/rigs.json
 
 ```json
 {
   "version": 1,
-  "projects": {}
-}
-```
-
-### Rig config.json
-
-```json
-{
-  "type": "rig",
-  "git_url": "https://github.com/steveyegge/gastown",
-  "beads_path": "~/.gastown/rigs/gastown/.beads",
-  "federation": {
-    "machines": ["local", "gcp-west-1"],
-    "preferred_machine": "local"
+  "rigs": {
+    "wyvern": {
+      "git_url": "https://github.com/steveyegge/wyvern",
+      "added_at": "2024-01-15T10:30:00Z"
+    },
+    "beads": {
+      "git_url": "https://github.com/steveyegge/beads",
+      "added_at": "2024-01-15T10:30:00Z"
+    }
   }
 }
 ```
 
-### Refinery state.json
+### config/federation.json (future)
+
+```json
+{
+  "version": 1,
+  "wasteland": null,
+  "peers": []
+}
+```
+
+### Agent state.json (refinery/, witness/, mayor/)
 
 ```json
 {
