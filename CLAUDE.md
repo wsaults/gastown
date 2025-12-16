@@ -19,5 +19,5 @@ go test ./...
 
 ## Key Epics
 
-- `gt-fqwd`: Port Gas Town to Go (main tracking epic)
-- `gt-evp2`: Town & Rig Management (install, doctor, federation)
+- `gt-u1j`: Port Gas Town to Go (main tracking epic)
+- `gt-f9x`: Town & Rig Management (install, doctor, federation)
