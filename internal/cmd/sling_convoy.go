@@ -66,9 +66,13 @@ func createAutoConvoy(beadID, beadTitle string) (string, error) {
 
 	townBeads := filepath.Join(townRoot, ".beads")
 
-	// Generate convoy ID with hq-cv- prefix for visual distinction
-	// The hq-cv- prefix is registered in routes during gt install
-	convoyID := fmt.Sprintf("hq-cv-%s", slingGenerateShortID())
+	// Generate convoy ID using the tracked bead's prefix for rig-level convoys.
+	// For example, "gt-18a" -> "gt-cv-xxxxx", "hq-123" -> "hq-cv-xxxxx"
+	prefix := beads.ExtractPrefix(beadID)
+	if prefix == "" {
+		prefix = "hq-" // Fallback for malformed bead IDs
+	}
+	convoyID := fmt.Sprintf("%scv-%s", prefix, slingGenerateShortID())
 
 	// Create convoy with title "Work: <issue-title>"
 	convoyTitle := fmt.Sprintf("Work: %s", beadTitle)
