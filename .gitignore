@@ -49,9 +49,7 @@ state.json
 # Clone-specific CLAUDE.md (regenerated locally per clone)
 CLAUDE.md
 
-# Gastown runtime directories (agent workspaces with duplicated node_modules)
-gastown_boy/
-gastown/
+# Gastown runtime directories
 deacon/
 daemon/
 
