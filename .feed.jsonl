@@ -2,3 +2,15 @@
 {"ts":"2026-01-17T00:40:43Z","source":"gt","type":"nudge","actor":"deacon","summary":"deacon: nudge","payload":{"reason":"[from deacon] session-started","rig":"","target":"deacon"}}
 {"ts":"2026-01-17T00:42:36Z","source":"gt","type":"session_death","actor":"gt-boot","summary":"Session gt-boot terminated: orphan cleanup","payload":{"agent":"unknown","caller":"gt doctor","reason":"orphan cleanup","session":"gt-boot"}}
 {"ts":"2026-01-17T00:43:37Z","source":"gt","type":"session_start","actor":"mayor","summary":"mayor: session_start","payload":{"actor_pid":"mayor-43752","cwd":"/Users/will/gt","role":"mayor","session_id":"34e1c524-f0cb-4808-849a-f628d8b92327"}}
+{"ts":"2026-01-17T00:44:08Z","source":"gt","type":"session_death","actor":"gt-boot","summary":"Session gt-boot terminated: orphan cleanup","payload":{"agent":"unknown","caller":"gt doctor","reason":"orphan cleanup","session":"gt-boot"}}
+{"ts":"2026-01-17T00:45:03Z","source":"gt","type":"boot","actor":"gt","summary":"gt: boot","payload":{"agents":["daemon","deacon","mayor"],"rig":"town"}}
+{"ts":"2026-01-17T00:45:42Z","source":"gt","type":"mail","actor":"mayor/","summary":"mayor/ → gastown_boy/splendid: RE: Sling request: hq-td06","payload":{"subject":"RE: Sling request: hq-td06","to":"gastown_boy/splendid"}}
+{"ts":"2026-01-17T00:46:10Z","source":"gt","type":"mail","actor":"mayor/","summary":"mayor/ → overseer/: RE: Create a bead for gastown_boy beads tab","payload":{"subject":"RE: Create a bead for gastown_boy beads tab","to":"overseer/"}}
+{"ts":"2026-01-17T00:46:10Z","source":"gt","type":"mail","actor":"mayor/","summary":"mayor/ → overseer/: RE: Create a bead for the crew tab","payload":{"subject":"RE: Create a bead for the crew tab","to":"overseer/"}}
+{"ts":"2026-01-17T00:46:59Z","source":"gt","type":"mail","actor":"overseer","summary":"overseer → mayor/: Delete request: hq-try8","payload":{"subject":"Delete request: hq-try8","to":"mayor/"}}
+{"ts":"2026-01-17T00:47:18Z","source":"gt","type":"mail","actor":"mayor/","summary":"mayor/ → overseer/: RE: Delete request: hq-try8","payload":{"subject":"RE: Delete request: hq-try8","to":"overseer/"}}
+{"ts":"2026-01-17T00:47:37Z","source":"gt","type":"mail","actor":"overseer","summary":"overseer → mayor/: Delete request: hq-x3b1","payload":{"subject":"Delete request: hq-x3b1","to":"mayor/"}}
+{"ts":"2026-01-17T00:47:50Z","source":"gt","type":"mail","actor":"overseer","summary":"overseer → mayor/: Sling request: hq-ux2j","payload":{"subject":"Sling request: hq-ux2j","to":"mayor/"}}
+{"ts":"2026-01-17T00:48:09Z","source":"gt","type":"mail","actor":"mayor/","summary":"mayor/ → overseer/: RE: Delete request: hq-x3b1","payload":{"subject":"RE: Delete request: hq-x3b1","to":"overseer/"}}
+{"ts":"2026-01-17T00:48:10Z","source":"gt","type":"mail","actor":"mayor/","summary":"mayor/ → overseer/: RE: Sling request: hq-ux2j","payload":{"subject":"RE: Sling request: hq-ux2j","to":"overseer/"}}
+{"ts":"2026-01-17T00:48:48Z","source":"gt","type":"sling","actor":"mayor","summary":"mayor assigned hq-ux2j to mayor/","payload":{"bead":"hq-ux2j","target":"mayor/"}}
