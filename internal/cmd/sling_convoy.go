@@ -85,7 +85,7 @@ func createAutoConvoy(beadID, beadTitle string) (string, error) {
 		createArgs = append(createArgs, "--force")
 	}
 
-	createCmd := exec.Command("bd", append([]string{"--no-daemon"}, createArgs...)...)
+	createCmd := exec.Command("bd", append([]string{"--sandbox"}, createArgs...)...)
 	createCmd.Dir = townBeads
 	createCmd.Stderr = os.Stderr
 
@@ -95,7 +95,7 @@ func createAutoConvoy(beadID, beadTitle string) (string, error) {
 
 	// Add tracking relation: convoy tracks the issue
 	trackBeadID := formatTrackBeadID(beadID)
-	depArgs := []string{"--no-daemon", "dep", "add", convoyID, trackBeadID, "--type=tracks"}
+	depArgs := []string{"--sandbox", "dep", "add", convoyID, trackBeadID, "--type=tracks"}
 	depCmd := exec.Command("bd", depArgs...)
 	depCmd.Dir = townBeads
 	depCmd.Stderr = os.Stderr

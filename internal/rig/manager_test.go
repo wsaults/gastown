@@ -457,7 +457,7 @@ set -e
 if [[ -n "$BEADS_DIR_LOG" ]]; then
   echo "${BEADS_DIR:-<unset>}" >> "$BEADS_DIR_LOG"
 fi
-if [[ "$1" == "--no-daemon" ]]; then
+if [[ "$1" == "--sandbox" ]]; then
   shift
 fi
 if [[ "$1" == "--allow-stale" ]]; then

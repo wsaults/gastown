@@ -224,7 +224,7 @@ func TestSlingFormulaOnBeadRoutesBDCommandsToTargetRig(t *testing.T) {
 	bdScript := `#!/bin/sh
 set -e
 echo "$(pwd)|$*" >> "${BD_LOG}"
-if [ "$1" = "--no-daemon" ]; then
+if [ "$1" = "--sandbox" ]; then
   shift
 fi
 cmd="$1"
@@ -386,7 +386,7 @@ func TestSlingFormulaOnBeadPassesFeatureAndIssueVars(t *testing.T) {
 	bdScript := `#!/bin/sh
 set -e
 echo "ARGS:$*" >> "${BD_LOG}"
-if [ "$1" = "--no-daemon" ]; then
+if [ "$1" = "--sandbox" ]; then
   shift
 fi
 cmd="$1"
@@ -493,7 +493,7 @@ exit 0
 }
 
 // TestVerifyBeadExistsAllowStale reproduces the bug in gtl-ncq where beads
-// visible via regular bd show fail with --no-daemon due to database sync issues.
+// visible via regular bd show fail with --sandbox due to database sync issues.
 // The fix uses --allow-stale to skip the sync check for existence verification.
 func TestVerifyBeadExistsAllowStale(t *testing.T) {
 	townRoot := t.TempDir()
@@ -504,8 +504,8 @@ func TestVerifyBeadExistsAllowStale(t *testing.T) {
 	}
 
 	// Create a stub bd that simulates the sync issue:
-	// - --no-daemon without --allow-stale fails (database out of sync)
-	// - --no-daemon with --allow-stale succeeds (skips sync check)
+	// - --sandbox without --allow-stale fails (database out of sync)
+	// - --sandbox with --allow-stale succeeds (skips sync check)
 	binDir := filepath.Join(townRoot, "bin")
 	if err := os.MkdirAll(binDir, 0755); err != nil {
 		t.Fatalf("mkdir binDir: %v", err)
@@ -520,7 +520,7 @@ for arg in "$@"; do
   fi
 done
 
-if [ "$1" = "--no-daemon" ]; then
+if [ "$1" = "--sandbox" ]; then
   if [ "$allow_stale" = "true" ]; then
     # --allow-stale skips sync check, succeeds
     echo '[{"title":"Test bead","status":"open","assignee":""}]'
@@ -550,7 +550,7 @@ exit 0
 		t.Fatalf("chdir: %v", err)
 	}
 
-	// EXPECTED: verifyBeadExists should use --no-daemon --allow-stale and succeed
+	// EXPECTED: verifyBeadExists should use --sandbox --allow-stale and succeed
 	beadID := "jv-v599"
 	err = verifyBeadExists(beadID)
 	if err != nil {
@@ -583,7 +583,7 @@ for arg in "$@"; do
   fi
 done
 
-if [ "$1" = "--no-daemon" ]; then
+if [ "$1" = "--sandbox" ]; then
   shift
   cmd="$1"
   if [ "$cmd" = "show" ]; then
@@ -642,13 +642,13 @@ exit 0
 	t.Setenv("GT_TEST_NO_NUDGE", "1")
 
 	// EXPECTED: gt sling should use daemon mode and succeed
-	// ACTUAL: verifyBeadExists uses --no-daemon and fails with sync error
+	// ACTUAL: verifyBeadExists uses --sandbox and fails with sync error
 	beadID := "jv-v599"
 	err = runSling(nil, []string{beadID})
 	if err != nil {
 		// Check if it's the specific error we're testing for
 		if strings.Contains(err.Error(), "is not a valid bead or formula") {
-			t.Errorf("gt sling failed to recognize bead %q: %v\nExpected to use daemon mode, but used --no-daemon which fails when DB out of sync", beadID, err)
+			t.Errorf("gt sling failed to recognize bead %q: %v\nExpected to use daemon mode, but used --sandbox which fails when DB out of sync", beadID, err)
 		} else {
 			// Some other error - might be expected in dry-run mode
 			t.Logf("gt sling returned error (may be expected in test): %v", err)
@@ -752,7 +752,7 @@ func TestSlingFormulaOnBeadSetsAttachedMolecule(t *testing.T) {
 	bdScript := `#!/bin/sh
 set -e
 echo "$PWD|$*" >> "${BD_LOG}"
-if [ "$1" = "--no-daemon" ]; then
+if [ "$1" = "--sandbox" ]; then
   shift
 fi
 cmd="$1"

@@ -381,7 +381,7 @@ func runSling(cmd *cobra.Command, args []string) error {
 
 		// Step 1: Cook the formula (ensures proto exists)
 		// Cook runs from rig directory to access the correct formula database
-		cookCmd := exec.Command("bd", "--no-daemon", "cook", formulaName)
+		cookCmd := exec.Command("bd", "--sandbox", "cook", formulaName)
 		cookCmd.Dir = formulaWorkDir
 		cookCmd.Stderr = os.Stderr
 		if err := cookCmd.Run(); err != nil {
@@ -392,7 +392,7 @@ func runSling(cmd *cobra.Command, args []string) error {
 		// Run from rig directory so wisp is created in correct database
 		featureVar := fmt.Sprintf("feature=%s", info.Title)
 		issueVar := fmt.Sprintf("issue=%s", beadID)
-		wispArgs := []string{"--no-daemon", "mol", "wisp", formulaName, "--var", featureVar, "--var", issueVar, "--json"}
+		wispArgs := []string{"--sandbox", "mol", "wisp", formulaName, "--var", featureVar, "--var", issueVar, "--json"}
 		wispCmd := exec.Command("bd", wispArgs...)
 		wispCmd.Dir = formulaWorkDir
 		wispCmd.Env = append(os.Environ(), "GT_ROOT="+townRoot)
@@ -410,8 +410,8 @@ func runSling(cmd *cobra.Command, args []string) error {
 		fmt.Printf("%s Formula wisp created: %s\n", style.Bold.Render("✓"), wispRootID)
 
 		// Step 3: Bond wisp to original bead (creates compound)
-		// Use --no-daemon for mol bond (requires direct database access)
-		bondArgs := []string{"--no-daemon", "mol", "bond", wispRootID, beadID, "--json"}
+		// Use --sandbox for mol bond (requires direct database access)
+		bondArgs := []string{"--sandbox", "mol", "bond", wispRootID, beadID, "--json"}
 		bondCmd := exec.Command("bd", bondArgs...)
 		bondCmd.Dir = formulaWorkDir
 		bondCmd.Stderr = os.Stderr
@@ -447,7 +447,7 @@ func runSling(cmd *cobra.Command, args []string) error {
 
 	// Hook the bead using bd update.
 	// See: https://github.com/steveyegge/gastown/issues/148
-	hookCmd := exec.Command("bd", "--no-daemon", "update", beadID, "--status=hooked", "--assignee="+targetAgent)
+	hookCmd := exec.Command("bd", "--sandbox", "update", beadID, "--status=hooked", "--assignee="+targetAgent)
 	hookCmd.Dir = beads.ResolveHookDir(townRoot, beadID, hookWorkDir)
 	hookCmd.Stderr = os.Stderr
 	if err := hookCmd.Run(); err != nil {

@@ -1285,9 +1285,9 @@ func getIssueDetailsBatch(issueIDs []string) map[string]*issueDetails {
 		return result
 	}
 
-	// Build args: bd --no-daemon show id1 id2 id3 ... --json
-	// Use --no-daemon to ensure fresh data (avoid stale cache from daemon)
-	args := append([]string{"--no-daemon", "show"}, issueIDs...)
+	// Build args: bd --sandbox show id1 id2 id3 ... --json
+	// Use --sandbox to ensure fresh data (avoid stale cache from daemon)
+	args := append([]string{"--sandbox", "show"}, issueIDs...)
 	args = append(args, "--json")
 
 	showCmd := exec.Command("bd", args...)
@@ -1333,15 +1333,15 @@ func getIssueDetailsBatch(issueIDs []string) map[string]*issueDetails {
 // Prefer getIssueDetailsBatch for multiple issues to avoid N+1 subprocess calls.
 func getIssueDetails(issueID string) *issueDetails {
 	// Use bd show with routing - it should find the issue in the right rig
-	// Use --no-daemon to ensure fresh data (avoid stale cache)
-	showCmd := exec.Command("bd", "--no-daemon", "show", issueID, "--json")
+	// Use --sandbox to ensure fresh data (avoid stale cache)
+	showCmd := exec.Command("bd", "--sandbox", "show", issueID, "--json")
 	var stdout bytes.Buffer
 	showCmd.Stdout = &stdout
 
 	if err := showCmd.Run(); err != nil {
 		return nil
 	}
-	// Handle bd --no-daemon exit 0 bug: empty stdout means not found
+	// Handle bd --sandbox exit 0 bug: empty stdout means not found
 	if stdout.Len() == 0 {
 		return nil
 	}

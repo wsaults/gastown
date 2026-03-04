@@ -27,18 +27,18 @@ type beadInfo struct {
 // Uses bd's native prefix-based routing via routes.jsonl - do NOT set BEADS_DIR
 // as that overrides routing and breaks resolution of rig-level beads.
 //
-// Uses --no-daemon with --allow-stale to avoid daemon socket timing issues
+// Uses --sandbox with --allow-stale to avoid daemon socket timing issues
 // while still finding beads when database is out of sync with JSONL.
 // For existence checks, stale data is acceptable - we just need to know it exists.
 func verifyBeadExists(beadID string) error {
-	cmd := exec.Command("bd", "--no-daemon", "show", beadID, "--json", "--allow-stale")
+	cmd := exec.Command("bd", "--sandbox", "show", beadID, "--json", "--allow-stale")
 	// Run from town root so bd can find routes.jsonl for prefix-based routing.
 	// Do NOT set BEADS_DIR - that overrides routing and breaks rig bead resolution.
 	if townRoot, err := workspace.FindFromCwd(); err == nil {
 		cmd.Dir = townRoot
 	}
-	// Use Output() instead of Run() to detect bd --no-daemon exit 0 bug:
-	// when issue not found, --no-daemon exits 0 but produces empty stdout.
+	// Use Output() instead of Run() to detect bd --sandbox exit 0 bug:
+	// when issue not found, --sandbox exits 0 but produces empty stdout.
 	out, err := cmd.Output()
 	if err != nil {
 		return fmt.Errorf("bead '%s' not found (bd show failed)", beadID)
@@ -51,9 +51,9 @@ func verifyBeadExists(beadID string) error {
 
 // getBeadInfo returns status and assignee for a bead.
 // Uses bd's native prefix-based routing via routes.jsonl.
-// Uses --no-daemon with --allow-stale for consistency with verifyBeadExists.
+// Uses --sandbox with --allow-stale for consistency with verifyBeadExists.
 func getBeadInfo(beadID string) (*beadInfo, error) {
-	cmd := exec.Command("bd", "--no-daemon", "show", beadID, "--json", "--allow-stale")
+	cmd := exec.Command("bd", "--sandbox", "show", beadID, "--json", "--allow-stale")
 	// Run from town root so bd can find routes.jsonl for prefix-based routing.
 	if townRoot, err := workspace.FindFromCwd(); err == nil {
 		cmd.Dir = townRoot
@@ -62,8 +62,8 @@ func getBeadInfo(beadID string) (*beadInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("bead '%s' not found", beadID)
 	}
-	// Handle bd --no-daemon exit 0 bug: when issue not found,
-	// --no-daemon exits 0 but produces empty stdout (error goes to stderr).
+	// Handle bd --sandbox exit 0 bug: when issue not found,
+	// --sandbox exits 0 but produces empty stdout (error goes to stderr).
 	if len(out) == 0 {
 		return nil, fmt.Errorf("bead '%s' not found", beadID)
 	}
@@ -82,12 +82,12 @@ func getBeadInfo(beadID string) (*beadInfo, error) {
 // This enables no-tmux mode where agents discover args via gt prime / bd show.
 func storeArgsInBead(beadID, args string) error {
 	// Get the bead to preserve existing description content
-	showCmd := exec.Command("bd", "--no-daemon", "show", beadID, "--json", "--allow-stale")
+	showCmd := exec.Command("bd", "--sandbox", "show", beadID, "--json", "--allow-stale")
 	out, err := showCmd.Output()
 	if err != nil {
 		return fmt.Errorf("fetching bead: %w", err)
 	}
-	// Handle bd --no-daemon exit 0 bug: empty stdout means not found
+	// Handle bd --sandbox exit 0 bug: empty stdout means not found
 	if len(out) == 0 {
 		return fmt.Errorf("bead not found")
 	}
@@ -115,7 +115,7 @@ func storeArgsInBead(beadID, args string) error {
 	newDesc := beads.SetAttachmentFields(issue, fields)
 
 	// Update the bead
-	updateCmd := exec.Command("bd", "--no-daemon", "update", beadID, "--description="+newDesc)
+	updateCmd := exec.Command("bd", "--sandbox", "update", beadID, "--description="+newDesc)
 	updateCmd.Stderr = os.Stderr
 	if err := updateCmd.Run(); err != nil {
 		return fmt.Errorf("updating bead description: %w", err)
@@ -471,7 +471,7 @@ func attachPolecatWorkMolecule(targetAgent, hookWorkDir, townRoot string) error 
 
 	// Cook the mol-polecat-work formula to ensure the proto exists
 	// This is safe to run multiple times - cooking is idempotent
-	cookCmd := exec.Command("bd", "--no-daemon", "cook", "mol-polecat-work")
+	cookCmd := exec.Command("bd", "--sandbox", "cook", "mol-polecat-work")
 	cookCmd.Dir = rigDir
 	cookCmd.Stderr = os.Stderr
 	if err := cookCmd.Run(); err != nil {
